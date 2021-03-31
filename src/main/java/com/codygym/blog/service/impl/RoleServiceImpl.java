@@ -4,7 +4,9 @@ import com.codygym.blog.model.Role;
 import com.codygym.blog.repository.RoleRepository;
 import com.codygym.blog.service.inteface.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RoleServiceImpl implements RoleService {
 
     @Autowired
@@ -12,16 +14,16 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Iterable<Role> findAll() {
-        return null;
+        return roleRepository.findAll();
     }
 
     @Override
     public void save(Role role) {
-
+        roleRepository.save(role);
     }
 
     @Override
     public Role findByName(String name) {
-        return null;
+        return roleRepository.findByName(name);
     }
 }

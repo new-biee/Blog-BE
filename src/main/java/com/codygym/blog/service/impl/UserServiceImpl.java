@@ -3,6 +3,7 @@ package com.codygym.blog.service.impl;
 import com.codygym.blog.model.User;
 import com.codygym.blog.model.UserPrinciple;
 import com.codygym.blog.repository.UserRepository;
+import com.codygym.blog.service.inteface.EmailService;
 import com.codygym.blog.service.inteface.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +18,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     @Transactional
@@ -114,13 +118,20 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(email);
     }
 
+    private void sendVerificationEmail(String token, String email) {
+        String linkVerify = "http://localhost:4200/register/" + token;
+        String content = "Please verify your account by clicking this link " + linkVerify;
+        String topic = "Blog verify account";
+        emailService.sendEmail(email, content, topic);
+    }
+
     @Override
     public boolean isCorrectConfirmPassword(User user) {
-        boolean isCorrentConfirmPassword = false;
+        boolean isCorrectConfirmPassword = false;
         if (user.getPassword().equals(user.getConfirmPassword())) {
-            isCorrentConfirmPassword = true;
+            isCorrectConfirmPassword = true;
         }
-        return isCorrentConfirmPassword;
+        return isCorrectConfirmPassword;
     }
 
     @Override

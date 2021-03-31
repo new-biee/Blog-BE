@@ -76,9 +76,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/users/**",
                         "/role").permitAll()
                 .antMatchers(HttpMethod.GET
-                        ).access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
-                .antMatchers(HttpMethod.DELETE, "/api/admin/**").access("hasRole('ROLE_ADMIN')")
-                .antMatchers(HttpMethod.PUT, "/users").access("hasRole('ROLE_USER')")
+                        ).access("hasRole('MEMBER') or hasRole('ADMIN')")
+                .antMatchers(HttpMethod.DELETE, "/api/admin/**").access("hasRole('ADMIN')")
+                .antMatchers(HttpMethod.PUT, "/users").access("hasRole('MEMBER')")
                 .anyRequest().authenticated()
                 .and().csrf().disable()
                 .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"));
