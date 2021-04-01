@@ -166,33 +166,37 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PutMapping(value = "users/{username}/new-password-username")
-    public ResponseEntity<User> updatePasswordByUsername(@PathVariable String username, @RequestBody User user) {
-        User userOptional = this.userService.findByUsername(username);
-        user.setId(userOptional.getId());
-        user.setUsername(userOptional.getUsername());
-        user.setEmail(userOptional.getEmail());
-        user.setEnabled(userOptional.isEnabled());
-        user.setRoles(userOptional.getRoles());
-        user.setName(userOptional.getName());
-        user.setImageUrls(userOptional.getImageUrls());
-        user.setPhoneNumber(userOptional.getPhoneNumber());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setConfirmPassword(passwordEncoder.encode(user.getConfirmPassword()));
-        userService.save(user);
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-    @GetMapping
+    @GetMapping("/users")
     public ResponseEntity<Iterable<User>> getAll() {
         Iterable<User> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    private void sendVerificationEmail(String token, String email) {
-        String linkVerify = "http://localhost:4200/register/" + token;
-        String content = "please verify your account by clicking this link " + linkVerify;
-        String topic = "Pro Hub verify account";
-        emailService.sendEmail(email, content, topic);
+    @PutMapping("/users/{id}/block")
+    public ResponseEntity<User> blocked(@PathVariable Long id, @RequestBody User user) {
+        Optional<User> userCurrent = userService.findById(id);
+        if (userCurrent.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"));
+
+        if (!isAdmin || userCurrent.get().getRoles().stream().anyMatch(userRole -> userRole.getName().equals("ADMIN"))) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
+        userCurrent.get().setBlocked(user.isBlocked());
+        userService.save(userCurrent.get());
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<User> removeUser(@PathVariable Long id) {
+        Optional<User> userCurrent = userService.findById(id);
+        if (userCurrent.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        userService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

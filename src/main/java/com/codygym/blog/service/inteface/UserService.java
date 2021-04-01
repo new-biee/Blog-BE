@@ -27,5 +27,5 @@ public interface UserService extends UserDetailsService {
 
     boolean isCorrectConfirmPassword(User user);
 
-    void delete(User user);
+    void delete(Long id);
 }

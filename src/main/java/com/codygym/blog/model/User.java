@@ -35,6 +35,8 @@ public class User implements Serializable {
 
     private boolean enabled = true;
 
+    private boolean blocked = false;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
             joinColumns = {@JoinColumn(name = "user_id")},
