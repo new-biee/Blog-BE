@@ -25,6 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Iterable<Post> findByContentContainingAndUserId(String content, Long id);
 
+    @Query(value = "SELECT * FROM post join images on post.id = images.post_id where post.id = ?1", nativeQuery = true)
     Optional<Post> findById(Long id);
 
     Iterable<Post> findAllByUserId(Long id);

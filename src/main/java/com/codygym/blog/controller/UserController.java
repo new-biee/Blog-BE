@@ -111,7 +111,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
-        Authentication authentication = authenticationManager.authenticate(
+            Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -191,12 +191,12 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<User> removeUser(@PathVariable Long id) {
+    public ResponseEntity removeUser(@PathVariable Long id) {
         Optional<User> userCurrent = userService.findById(id);
         if (userCurrent.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            userService.delete(id);
+            return new ResponseEntity(HttpStatus.OK);
         }
-        userService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 }
